@@ -41,7 +41,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192.png" />
       </head>
       <body className={`${outfit.variable} font-sans antialiased`}>
