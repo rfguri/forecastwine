@@ -3,6 +3,7 @@
 import { useLocale } from "@/lib/locale-context";
 import { ForecastStrip } from "./forecast-strip";
 import { InstallBanner } from "./install-banner";
+import { ProfileMenu } from "./profile-menu";
 
 export function ForecastPage() {
   const { dict } = useLocale();
@@ -13,6 +14,7 @@ export function ForecastPage() {
       <header className="animate-fade-up stagger-1">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold tracking-tight">{dict.appName}</h1>
+          <ProfileMenu />
         </div>
       </header>
 

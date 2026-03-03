@@ -1,14 +1,18 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { getForecast } from "@/lib/calendar";
+import { getVisibleDays, hasPremiumAccess } from "@/lib/entitlements";
 import { useLocale } from "@/lib/locale-context";
 import { DayCard } from "./day-card";
-
-const FORECAST_DAYS = 30;
+import { PaywallCard } from "./paywall-card";
 
 export function ForecastStrip() {
   const { dict } = useLocale();
+  const router = useRouter();
+  const visibleDays = getVisibleDays();
+  const isPremium = hasPremiumAccess();
   const [selectedIndex, setSelectedIndex] = useState(() => {
     if (typeof window === "undefined") return 0;
     const saved = sessionStorage.getItem("fw-selected-day");
@@ -24,14 +28,16 @@ export function ForecastStrip() {
     });
   }, []);
 
+  const totalCards = isPremium ? visibleDays : visibleDays + 3;
+
   const forecast = useMemo(
-    () => getForecast(new Date(), FORECAST_DAYS),
-    [],
+    () => getForecast(new Date(), totalCards),
+    [totalCards],
   );
 
   // Split into hero, upcoming (after selected), and previous (before selected)
   const heroDay = forecast[selectedIndex];
-  const upcomingDays = forecast.slice(selectedIndex + 1, FORECAST_DAYS);
+  const upcomingDays = forecast.slice(selectedIndex + 1, totalCards);
   const previousDays = selectedIndex > 0 ? forecast.slice(0, selectedIndex) : [];
 
   return (
@@ -76,13 +82,15 @@ export function ForecastStrip() {
           </div>
           {upcomingDays.map((day, i) => {
             const globalIndex = selectedIndex + 1 + i;
+            const isLocked = !isPremium && globalIndex >= visibleDays;
 
             return (
               <DayCard
                 key={day.date.toISOString()}
                 day={day}
+                isLocked={isLocked}
                 direction={direction}
-                onSelect={() => navigate(globalIndex)}
+                onSelect={isLocked ? () => router.push("/subscribe") : () => navigate(globalIndex)}
                 animationDelay={0}
               />
             );
@@ -90,11 +98,16 @@ export function ForecastStrip() {
         </>
       )}
 
-      {/* End of forecast */}
-      <div className="mt-4 text-center">
-        <p className="text-[11px] font-medium text-muted-foreground/50">{dict.forecastEndTitle}</p>
-        <p className="mt-0.5 text-[10px] font-light text-muted-foreground/40">{dict.forecastEndDesc}</p>
-      </div>
+      {/* End of forecast (premium) */}
+      {isPremium && (
+        <div className="mt-4 text-center">
+          <p className="text-[11px] font-medium text-muted-foreground/50">{dict.forecastEndTitle}</p>
+          <p className="mt-0.5 text-[10px] font-light text-muted-foreground/40">{dict.forecastEndDesc}</p>
+        </div>
+      )}
+
+      {/* Paywall CTA (free) */}
+      {!isPremium && <div className="mt-7"><PaywallCard /></div>}
     </div>
   );
 }

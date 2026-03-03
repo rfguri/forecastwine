@@ -56,6 +56,18 @@ const dictionaries = {
     // UI
     today: "Today",
     tomorrow: "Tomorrow",
+    free: "Free",
+    premium: "Premium",
+    unlockForecast: "See the full forecast",
+    unlockDesc: "Unlock 30 days ahead for €0.99/month",
+    subscribe: "Subscribe",
+    subscription: "Subscription",
+    perMonth: "/month",
+    feature1: "Full 30-day forecast",
+    feature2: "All day types and ratings",
+    feature3: "No ads, ever",
+    stripeNote: "Payments by Stripe \u00B7 Cancel anytime",
+    restore: "Restore purchase",
 
     // Days of week
     mon: "Mon",
@@ -66,6 +78,18 @@ const dictionaries = {
     sat: "Sat",
     sun: "Sun",
 
+    // Profile
+    profile: "Profile",
+    anonymous: "Anonymous",
+    plan: "Plan",
+    freePlan: "Free",
+    premiumPlan: "Premium",
+    language: "Language",
+    privacy: "Privacy Policy",
+    terms: "Terms of Service",
+    signOut: "Sign out",
+    signIn: "Restore purchase",
+    version: "Version",
 
     // Install
     installTitle: "Install Forecast Wine",
@@ -91,7 +115,7 @@ const dictionaries = {
     previousDays: "Previous days",
     loadMore: "Load more",
     forecastEndTitle: "Full 30-day forecast",
-    forecastEndDesc: "Updates daily with a new day every morning.",
+    forecastEndDesc: "Updates daily. A new day unlocks every morning.",
     allDay: "All day",
     from: "from",
     until: "until",
@@ -114,6 +138,8 @@ const dictionaries = {
     poor: "Bad",
     ratingBestEarly: "Best early",
     ratingPeaksLater: "Peaks later",
+    backToForecast: "Back to forecast",
+    lastUpdated: "Last updated",
 
     // Unfavourable periods
     unfavourable: "Unfavourable",
@@ -175,6 +201,18 @@ const dictionaries = {
 
     today: "Hoy",
     tomorrow: "Mañana",
+    free: "Gratis",
+    premium: "Premium",
+    unlockForecast: "Ver el pronóstico completo",
+    unlockDesc: "Desbloquea 30 días por adelantado por €0,99/mes",
+    subscribe: "Suscribirme",
+    subscription: "Suscripción",
+    perMonth: "/mes",
+    feature1: "Pronóstico completo de 30 días",
+    feature2: "Tipos y valoraciones de cada día",
+    feature3: "Sin anuncios, nunca",
+    stripeNote: "Pagos con Stripe \u00B7 Cancela cuando quieras",
+    restore: "Restaurar compra",
 
     mon: "Lun",
     tue: "Mar",
@@ -183,6 +221,18 @@ const dictionaries = {
     fri: "Vie",
     sat: "Sáb",
     sun: "Dom",
+
+    profile: "Perfil",
+    anonymous: "Anónimo",
+    plan: "Plan",
+    freePlan: "Gratis",
+    premiumPlan: "Premium",
+    language: "Idioma",
+    privacy: "Política de privacidad",
+    terms: "Términos de servicio",
+    signOut: "Cerrar sesión",
+    signIn: "Restaurar compra",
+    version: "Versión",
 
     installTitle: "Instala Forecast Wine",
     installDesc: "Añádela a tu pantalla de inicio, sin tienda de apps",
@@ -205,7 +255,7 @@ const dictionaries = {
     previousDays: "Días anteriores",
     loadMore: "Ver más",
     forecastEndTitle: "Pronóstico completo de 30 días",
-    forecastEndDesc: "Se actualiza a diario con un nuevo día cada mañana.",
+    forecastEndDesc: "Se actualiza a diario. Cada mañana se desbloquea un nuevo día.",
     allDay: "Todo el día",
     from: "desde",
     until: "hasta",
@@ -226,6 +276,8 @@ const dictionaries = {
     poor: "Malo",
     ratingBestEarly: "Mejor temprano",
     ratingPeaksLater: "Mejora después",
+    backToForecast: "Volver al pronóstico",
+    lastUpdated: "Última actualización",
 
     unfavourable: "Desfavorable",
     unfavourableNode: "Nodo lunar",

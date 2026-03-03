@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { Lock } from "lucide-react";
 import { type DayType, type DayPeriod, type ForecastDay, DAY_TYPE_CONFIG } from "@/lib/calendar";
 import { useLocale } from "@/lib/locale-context";
 import { formatDayLabel, formatHeroDate, formatCompactDate } from "@/lib/i18n";
@@ -10,6 +11,7 @@ import { cn } from "@/lib/utils";
 interface DayCardProps {
   day: ForecastDay;
   isHero?: boolean;
+  isLocked?: boolean;
   onSelect?: () => void;
   animationDelay?: number;
   direction?: "forward" | "backward";
@@ -213,12 +215,32 @@ function getDescription(
   return dict.descTransitionShort.replace("{t1}", t1).replace("{t2}", t2).replace("{time}", timeLabel);
 }
 
-export function DayCard({ day, isHero, onSelect, animationDelay = 0 }: DayCardProps) {
+export function DayCard({ day, isHero, isLocked, onSelect, animationDelay = 0 }: DayCardProps) {
   const { locale, dict } = useLocale();
   const { date, periods, primaryType, hasUnfavourable } = day;
   const ratingLabels = locale === "es" ? RATING_LABELS_ES : RATING_LABELS_EN;
   const displayTypes = getDisplayTypes(periods);
   const hasTransition = displayTypes.length > 1;
+
+  // --- LOCKED CARD ---
+  if (isLocked) {
+    return (
+      <button
+        type="button"
+        onClick={onSelect}
+        className="flex items-center justify-between py-4 border-t border-border/20 w-full text-left opacity-40"
+      >
+        <span className="text-[15px] font-medium text-muted-foreground/60">
+          {formatCompactDate(date, locale)}
+        </span>
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-muted-foreground/20" />
+          <span className="text-sm text-muted-foreground/40">—</span>
+          <Lock className="h-3.5 w-3.5 text-muted-foreground/30" />
+        </div>
+      </button>
+    );
+  }
 
   // --- HERO CARD ---
   if (isHero) {
