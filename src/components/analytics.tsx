@@ -9,10 +9,11 @@ export function Analytics() {
     if (!key) return;
 
     posthog.init(key, {
-      api_host: "https://us.i.posthog.com",
+      api_host: "https://fw.forecastwine.com",
+      ui_host: "https://eu.i.posthog.com",
       autocapture: false,
       capture_pageview: true,
-      capture_pageleave: false,
+      capture_pageleave: true,
       disable_session_recording: true,
       disable_scroll_properties: true,
       enable_heatmaps: false,
