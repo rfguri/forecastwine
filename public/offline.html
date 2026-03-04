@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ForecastWine — Offline</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #faf9f7;
+      color: #1a1025;
+      padding: 2rem;
+      text-align: center;
+    }
+    .container { max-width: 320px; }
+    .emoji { font-size: 3rem; }
+    h1 { font-size: 1.25rem; font-weight: 600; margin-top: 1rem; }
+    p { font-size: 0.875rem; color: #666; margin-top: 0.5rem; }
+    button {
+      margin-top: 1.5rem;
+      padding: 0.5rem 1.5rem;
+      border-radius: 9999px;
+      border: 1px solid #ddd;
+      background: white;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="emoji">🍇</div>
+    <h1>You're offline</h1>
+    <p>Check your connection and try again to see the wine forecast.</p>
+    <button onclick="location.reload()">Try again</button>
+  </div>
+</body>
+</html>
