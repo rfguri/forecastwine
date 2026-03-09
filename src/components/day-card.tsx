@@ -35,14 +35,18 @@ const TYPE_EMOJI: Record<DayType, string> = {
 };
 
 function formatHour(hour: number, locale: Locale = "en"): string {
+  // Cap end-of-day (24:00) to 11:59 PM / 23:59
+  if (hour >= 24) {
+    return locale === "es" ? "23:59" : "11:59PM";
+  }
   const totalMinutes = Math.round(hour * 60 / 5) * 5;
   const h = Math.floor(totalMinutes / 60) % 24;
   const m = totalMinutes % 60;
   if (locale === "es") {
     return m === 0 ? `${h}:00` : `${h}:${String(m).padStart(2, "0")}`;
   }
-  const h12 = h === 0 || h === 24 ? 12 : h > 12 ? h - 12 : h;
-  const suffix = h < 12 || h === 24 ? "am" : "pm";
+  const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  const suffix = h < 12 ? "AM" : "PM";
   return m === 0 ? `${h12}${suffix}` : `${h12}:${String(m).padStart(2, "0")}${suffix}`;
 }
 
@@ -277,7 +281,7 @@ export function DayCard({ day, isHero, onSelect, animationDelay = 0 }: DayCardPr
             <p className="mt-2 text-2xl font-bold tracking-tight text-foreground">
               {moment.timeText}
             </p>
-            <p className="mt-1.5 text-xs text-muted-foreground/50">
+            <p className={cn("mt-1.5 text-xs", moment.isYes ? "text-[#7B2D45] font-medium" : "text-muted-foreground/50")}>
               {dict[moment.contextKey as keyof typeof dict] || moment.contextKey}
             </p>
           </div>
