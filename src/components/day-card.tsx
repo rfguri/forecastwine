@@ -139,40 +139,36 @@ function computeBestMoment(periods: DayPeriod[], locale: Locale, dict: Dictionar
     return { isYes: false, headerLabel: "bestMoment", timeText, contextKey: "tooEarly", startHour: best.startHour, endHour: best.endHour };
   }
 
-  // Practical window — compute time-of-day context based on range
-  const span = best.endHour - best.startHour;
-  const s = best.startHour;
-  const e = best.endHour;
+  // If window starts at 11pm or later → too late at night
+  if (best.startHour >= 23) {
+    return { isYes: false, headerLabel: "bestMoment", timeText, contextKey: "tooLate", startHour: best.startHour, endHour: best.endHour };
+  }
+
+  // Practical window — clamp to drinkable hours (10am–11pm)
+  // Zones: <10 early | 10-12 morning | 12-14 midday | 14-17 afternoon | 17-21 evening | 21-23 night | >23 late
+  const ps = Math.max(best.startHour, 10);
+  const pe = Math.min(best.endHour, 23);
+  const pspan = pe - ps;
   let contextKey: string;
 
-  if (span >= 16) {
-    contextKey = "mostOfTheDay";
-  } else if (s < 6 && e <= 10) {
-    contextKey = "earlyMorning";
-  } else if (s < 6 && e <= 14) {
-    contextKey = "morningToMidday";
-  } else if (s < 6 && e <= 20) {
-    contextKey = "morningToAfternoon";
-  } else if (s < 6) {
-    contextKey = "mostOfTheDay";
-  } else if (s < 12 && e <= 14) {
-    contextKey = "morning";
-  } else if (s < 12 && e <= 17) {
-    contextKey = "morningToMidday";
-  } else if (s < 12 && e <= 22) {
-    contextKey = "morningToAfternoon";
-  } else if (s < 12) {
-    contextKey = "mostOfTheDay";
-  } else if (s < 15 && e <= 18) {
-    contextKey = "midday";
-  } else if (s < 15 && e <= 22) {
-    contextKey = "afternoonToEvening";
-  } else if (s < 18 && e <= 22) {
-    contextKey = "afternoon";
-  } else if (s < 18) {
-    contextKey = "afternoonToEvening";
+  if (pspan >= 10) {
+    contextKey = "ctxMostOfDay";
+  } else if (pe <= 12) {
+    contextKey = "ctxMorning";
+  } else if (pe <= 14) {
+    contextKey = "ctxUntilMidday";
+  } else if (ps >= 21) {
+    contextKey = "ctxAtNight";
+  } else if (ps >= 17) {
+    contextKey = "ctxEvening";
+  } else if (ps >= 14) {
+    contextKey = pe <= 21 ? "ctxAfternoon" : "ctxAfternoonEvening";
+  } else if (pe <= 17) {
+    contextKey = "ctxMiddayAfternoon";
+  } else if (pe <= 21) {
+    contextKey = "ctxUntilEvening";
   } else {
-    contextKey = "evening";
+    contextKey = "ctxMostOfDay";
   }
 
   return { isYes: true, headerLabel: "bestMoment", timeText, contextKey, startHour: best.startHour, endHour: best.endHour };
@@ -209,6 +205,9 @@ function getDescription(
 
   if (!isYes && contextKey === "tooEarly") {
     return dict.descTransitionTooEarly.replace("{t1}", t1).replace("{t2}", t2);
+  }
+  if (!isYes && contextKey === "tooLate") {
+    return dict.descTransitionTooLate.replace("{t1}", t1).replace("{t2}", t2);
   }
   if (!isYes) {
     return dict.descTransitionNoWindow.replace("{t1}", t1).replace("{t2}", t2);
