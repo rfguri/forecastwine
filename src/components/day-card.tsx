@@ -184,36 +184,27 @@ function getHeadline(isYes: boolean, primaryType: DayType, hasTransition: boolea
 /** Get the hero description text */
 function getDescription(
   isYes: boolean,
-  isAllDay: boolean,
   primaryType: DayType,
   hasTransition: boolean,
   displayTypes: { type: DayType }[],
-  contextKey: string,
   dict: Dictionary,
 ): string {
   if (!hasTransition) {
-    // Single type
-    if (primaryType === "fruit") return isAllDay ? dict.descFruitAllDay : dict.descFruit;
-    if (primaryType === "flower") return isAllDay ? dict.descFlowerAllDay : dict.descFlower;
+    if (primaryType === "fruit") return dict.descFruit;
+    if (primaryType === "flower") return dict.descFlower;
     if (primaryType === "leaf") return dict.descLeaf;
     return dict.descRoot;
   }
 
-  // Transition — build composite description
-  const t1 = dict[displayTypes[0].type].toLowerCase();
-  const t2 = dict[displayTypes[displayTypes.length - 1].type].toLowerCase();
+  // Transition — describe what it means for the wine
+  const isGood = (t: DayType) => t === "fruit" || t === "flower";
+  const firstGood = isGood(displayTypes[0].type);
+  const lastGood = isGood(displayTypes[displayTypes.length - 1].type);
 
-  if (!isYes && contextKey === "tooEarly") {
-    return dict.descTransitionTooEarly.replace("{t1}", t1).replace("{t2}", t2);
-  }
-  if (!isYes && contextKey === "tooLate") {
-    return dict.descTransitionTooLate.replace("{t1}", t1).replace("{t2}", t2);
-  }
-  if (!isYes) {
-    return dict.descTransitionNoWindow.replace("{t1}", t1).replace("{t2}", t2);
-  }
-  const timeLabel = dict[contextKey as keyof typeof dict] || contextKey;
-  return dict.descTransitionShort.replace("{t1}", t1).replace("{t2}", t2).replace("{time}", timeLabel);
+  if (firstGood && !lastGood) return dict.descGoodToBad;
+  if (!firstGood && lastGood) return dict.descBadToGood;
+  if (!firstGood && !lastGood) return dict.descBadToBad;
+  return dict.descGoodToGood;
 }
 
 export function DayCard({ day, isHero, onSelect, animationDelay = 0 }: DayCardProps) {
@@ -227,8 +218,7 @@ export function DayCard({ day, isHero, onSelect, animationDelay = 0 }: DayCardPr
   if (isHero) {
     const moment = computeBestMoment(periods, locale, dict);
     const headline = getHeadline(moment.isYes, primaryType, hasTransition, dict);
-    const isAllDay = moment.contextKey === "noTimeRestriction";
-    const description = getDescription(moment.isYes, isAllDay, primaryType, hasTransition, displayTypes, moment.contextKey, dict);
+    const description = getDescription(moment.isYes, primaryType, hasTransition, displayTypes, dict);
     const heroDate = formatHeroDate(date, locale);
     const dayLabel = formatDayLabel(date, locale, dict);
 
