@@ -21,7 +21,7 @@ const dictionaries = {
     // Headlines (hero)
     headlineExcellent: "Fantastic day to drink wine",
     headlineGood: "Good day to drink wine",
-    headlineBad: "Not a day for wine",
+    headlineBad: "Not the best day to drink wine",
 
     // Hero descriptions (single type)
     descFruit: "Peak flavors",
@@ -145,7 +145,7 @@ const dictionaries = {
 
     headlineExcellent: "Fantástico día para beber vino",
     headlineGood: "Buen día para beber vino",
-    headlineBad: "No es día para beber vino",
+    headlineBad: "No es el mejor día para beber vino",
 
     descFruit: "Sabores en su estado óptimo",
     descFlower: "Aromas más vivos",
