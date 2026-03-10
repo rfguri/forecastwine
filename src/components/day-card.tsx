@@ -119,12 +119,12 @@ function computeBestMoment(periods: DayPeriod[], locale: Locale, dict: Dictionar
     return { isYes: true, headerLabel: "bestMoment", timeText: dict.allDay, contextKey: "noTimeRestriction", startHour: 0, endHour: 24 };
   }
 
-  // Find best practical window (most overlap with 10:00-22:00)
+  // Find best practical window (most overlap with 12:00-23:00)
   let best = goodWindows[0];
   let bestOverlap = 0;
   for (const w of goodWindows) {
-    const overlapStart = Math.max(w.startHour, 10);
-    const overlapEnd = Math.min(w.endHour, 22);
+    const overlapStart = Math.max(w.startHour, 12);
+    const overlapEnd = Math.min(w.endHour, 23);
     const overlap = Math.max(0, overlapEnd - overlapStart);
     if (overlap > bestOverlap) {
       bestOverlap = overlap;
@@ -132,10 +132,13 @@ function computeBestMoment(periods: DayPeriod[], locale: Locale, dict: Dictionar
     }
   }
 
-  const timeText = `${formatHour(best.startHour, locale)} – ${formatHour(best.endHour, locale)}`;
+  // Clamp displayed time to drinkable hours (12pm–11pm)
+  const displayStart = Math.max(best.startHour, 12);
+  const displayEnd = Math.min(best.endHour, 23);
+  const timeText = `${formatHour(displayStart, locale)} – ${formatHour(displayEnd, locale)}`;
 
-  // If window ends before 10am → too early
-  if (best.endHour <= 10) {
+  // If window ends before 12pm → too early
+  if (best.endHour <= 12) {
     return { isYes: false, headerLabel: "bestMoment", timeText, contextKey: "tooEarly", startHour: best.startHour, endHour: best.endHour };
   }
 
@@ -144,29 +147,25 @@ function computeBestMoment(periods: DayPeriod[], locale: Locale, dict: Dictionar
     return { isYes: false, headerLabel: "bestMoment", timeText, contextKey: "tooLate", startHour: best.startHour, endHour: best.endHour };
   }
 
-  // Practical window — clamp to drinkable hours (10am–11pm)
-  // Zones: <10 early | 10-12 morning | 12-14 midday | 14-17 afternoon | 17-21 evening | 21-23 night | >23 late
-  const ps = Math.max(best.startHour, 10);
+  // Practical window — clamp to drinkable hours (12pm–11pm)
+  // Zones: <12 early | 12-14 midday | 14-17 afternoon | 17-21 evening | 21-23 night | >23 late
+  const ps = Math.max(best.startHour, 12);
   const pe = Math.min(best.endHour, 23);
   const pspan = pe - ps;
   let contextKey: string;
 
   if (pspan >= 10) {
     contextKey = "ctxMostOfDay";
-  } else if (pe <= 12) {
-    contextKey = "ctxMorning";
   } else if (pe <= 14) {
-    contextKey = "ctxUntilMidday";
+    contextKey = "ctxMidday";
   } else if (ps >= 21) {
     contextKey = "ctxAtNight";
   } else if (ps >= 17) {
     contextKey = "ctxEvening";
   } else if (ps >= 14) {
     contextKey = pe <= 21 ? "ctxAfternoon" : "ctxAfternoonEvening";
-  } else if (ps < 12 && pe <= 17) {
-    contextKey = "ctxUntilAfternoon";
   } else if (pe <= 17) {
-    contextKey = "ctxMiddayAfternoon";
+    contextKey = "ctxUntilAfternoon";
   } else if (pe <= 21) {
     contextKey = "ctxUntilEvening";
   } else {
@@ -254,8 +253,8 @@ export function DayCard({ day, isHero, onSelect, animationDelay = 0 }: DayCardPr
   if (isHero) {
     const moment = computeBestMoment(periods, locale, dict);
     const dominantDrinkable = hasTransition ? getDominantDrinkableType(displayTypes, periods) : null;
-    // If drinkable good hours < 6h on a transition day, treat as bad
-    const drinkableHours = hasTransition ? getDrinkableGoodHours(periods) : Infinity;
+    // If drinkable good hours < 6h, treat as bad
+    const drinkableHours = getDrinkableGoodHours(periods);
     const effectiveYes = moment.isYes && drinkableHours >= 6;
     const headline = getHeadline(effectiveYes, primaryType, hasTransition, dominantDrinkable, dict);
     const description = getDescription(effectiveYes, primaryType, hasTransition, displayTypes, periods, dict);
