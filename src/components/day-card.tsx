@@ -248,7 +248,7 @@ export function DayCard({ day, isHero, onSelect, animationDelay = 0 }: DayCardPr
         <p className="mt-0.5 text-[15px] text-muted-foreground/50">{heroDate}</p>
 
         {/* Headline */}
-        <h2 className="mt-5 max-w-[260px] mx-auto text-[40px] font-semibold leading-[1.15] tracking-tight text-foreground text-center">
+        <h2 className="mt-5 max-w-[340px] mx-auto text-[40px] font-semibold leading-[1.15] tracking-tight text-foreground text-center">
           {headline}
         </h2>
 
