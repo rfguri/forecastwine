@@ -188,7 +188,8 @@ function getDescription(
   isYes: boolean,
   primaryType: DayType,
   hasTransition: boolean,
-  displayTypes: { type: DayType }[],
+  displayTypes: { type: DayType; startHour: number; endHour: number }[],
+  periods: DayPeriod[],
   dict: Dictionary,
 ): string {
   if (!hasTransition) {
@@ -198,8 +199,17 @@ function getDescription(
     return dict.descRoot;
   }
 
-  // Transition — describe what it means for the wine
+  // If good hours dominate (10h+), use the dominant good type's description
   const isGood = (t: DayType) => t === "fruit" || t === "flower";
+  const goodHours = getGoodWindows(periods).reduce((sum, w) => sum + (w.endHour - w.startHour), 0);
+  if (goodHours >= 10) {
+    const dominantGood = displayTypes.find(dt => isGood(dt.type) && (dt.endHour - dt.startHour) >= 10);
+    if (dominantGood) {
+      return dominantGood.type === "fruit" ? dict.descFruit : dict.descFlower;
+    }
+  }
+
+  // Transition — describe what it means for the wine
   const firstGood = isGood(displayTypes[0].type);
   const lastGood = isGood(displayTypes[displayTypes.length - 1].type);
 
@@ -220,7 +230,7 @@ export function DayCard({ day, isHero, onSelect, animationDelay = 0 }: DayCardPr
   if (isHero) {
     const moment = computeBestMoment(periods, locale, dict);
     const headline = getHeadline(moment.isYes, primaryType, hasTransition, dict);
-    const description = getDescription(moment.isYes, primaryType, hasTransition, displayTypes, dict);
+    const description = getDescription(moment.isYes, primaryType, hasTransition, displayTypes, periods, dict);
     const heroDate = formatHeroDate(date, locale);
     const dayLabel = formatDayLabel(date, locale, dict);
 
