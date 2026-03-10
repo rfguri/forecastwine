@@ -24,16 +24,16 @@ const dictionaries = {
     headlineBad: "Not the best day to drink wine",
 
     // Hero descriptions (single type)
-    descFruit: "Peak flavors",
-    descFlower: "Vivid aromas",
-    descLeaf: "May taste muted",
-    descRoot: "Aromas may feel closed",
+    descFruit: "Flavors tend to peak with fuller body and depth",
+    descFlower: "Aromas tend to shine with greater expression",
+    descLeaf: "Tends to feel flat with less expression",
+    descRoot: "Aromas tend to close off with muted character",
 
     // Transition descriptions — what it means for the wine
-    descGoodToBad: "Expressive early, may fade later",
-    descBadToGood: "May start quiet, opens up later",
-    descBadToBad: "May stay muted",
-    descGoodToGood: "Expressive throughout",
+    descGoodToBad: "Starts expressive but tends to fade as the day goes on",
+    descBadToGood: "Quiet at first, tends to open up later",
+    descBadToBad: "Tends to stay flat throughout",
+    descGoodToGood: "Tends to stay expressive throughout",
 
     // Best moment section
     bestMoment: "Best moment",
@@ -147,15 +147,15 @@ const dictionaries = {
     headlineGood: "Buen día para beber vino",
     headlineBad: "No es el mejor día para beber vino",
 
-    descFruit: "Sabores en su estado óptimo",
-    descFlower: "Aromas más vivos",
-    descLeaf: "Puede apagarse",
-    descRoot: "Los aromas pueden cerrarse",
+    descFruit: "Los sabores tienden a su punto con más cuerpo y profundidad",
+    descFlower: "Los aromas tienden a brillar con mayor expresión",
+    descLeaf: "Tiende a sentirse plano con menor expresión",
+    descRoot: "Los aromas tienden a cerrarse con carácter apagado",
 
-    descGoodToBad: "Expresivo temprano, puede apagarse luego",
-    descBadToGood: "Puede empezar apagado, mejora luego",
-    descBadToBad: "Puede mantenerse apagado",
-    descGoodToGood: "Expresivo en todo momento",
+    descGoodToBad: "Empieza expresivo pero tiende a apagarse con el día",
+    descBadToGood: "Tranquilo al principio, tiende a mejorar luego",
+    descBadToBad: "Tiende a mantenerse plano",
+    descGoodToGood: "Tiende a mantenerse expresivo",
 
     bestMoment: "Mejor momento",
     noWindow: "Sin ventana",
