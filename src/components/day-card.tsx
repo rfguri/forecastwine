@@ -163,6 +163,8 @@ function computeBestMoment(periods: DayPeriod[], locale: Locale, dict: Dictionar
     contextKey = "ctxEvening";
   } else if (ps >= 14) {
     contextKey = pe <= 21 ? "ctxAfternoon" : "ctxAfternoonEvening";
+  } else if (ps < 12 && pe <= 17) {
+    contextKey = "ctxUntilAfternoon";
   } else if (pe <= 17) {
     contextKey = "ctxMiddayAfternoon";
   } else if (pe <= 21) {
