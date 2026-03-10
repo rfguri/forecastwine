@@ -177,9 +177,36 @@ function computeBestMoment(periods: DayPeriod[], locale: Locale, dict: Dictionar
 }
 
 /** Get the headline key based on Yes/No and type */
-function getHeadline(isYes: boolean, primaryType: DayType, hasTransition: boolean, dict: Dictionary): string {
+/** Total good hours within drinkable window (12PM–11PM) */
+function getDrinkableGoodHours(periods: DayPeriod[]): number {
+  return getGoodWindows(periods).reduce((sum, w) => {
+    const start = Math.max(w.startHour, 12);
+    const end = Math.min(w.endHour, 23);
+    return sum + Math.max(0, end - start);
+  }, 0);
+}
+
+/** Find dominant good type by drinkable hours (12PM–11PM), or null */
+function getDominantDrinkableType(
+  displayTypes: { type: DayType; startHour: number; endHour: number }[],
+  periods: DayPeriod[],
+): DayType | null {
+  const drinkableGoodHours = getDrinkableGoodHours(periods);
+  if (drinkableGoodHours < 10) return null;
+  const isGood = (t: DayType) => t === "fruit" || t === "flower";
+  const dominant = displayTypes.find(dt => {
+    if (!isGood(dt.type)) return false;
+    const start = Math.max(dt.startHour, 12);
+    const end = Math.min(dt.endHour, 23);
+    return (end - start) >= 10;
+  });
+  return dominant?.type ?? null;
+}
+
+function getHeadline(isYes: boolean, primaryType: DayType, hasTransition: boolean, dominantDrinkableType: DayType | null, dict: Dictionary): string {
   if (!isYes) return dict.headlineBad;
-  if (primaryType === "fruit" && !hasTransition) return dict.headlineExcellent;
+  const effectiveType = dominantDrinkableType || primaryType;
+  if (effectiveType === "fruit" && (!hasTransition || dominantDrinkableType)) return dict.headlineExcellent;
   return dict.headlineGood;
 }
 
@@ -199,17 +226,14 @@ function getDescription(
     return dict.descRoot;
   }
 
-  // If good hours dominate (10h+), use the dominant good type's description
-  const isGood = (t: DayType) => t === "fruit" || t === "flower";
-  const goodHours = getGoodWindows(periods).reduce((sum, w) => sum + (w.endHour - w.startHour), 0);
-  if (goodHours >= 10) {
-    const dominantGood = displayTypes.find(dt => isGood(dt.type) && (dt.endHour - dt.startHour) >= 10);
-    if (dominantGood) {
-      return dominantGood.type === "fruit" ? dict.descFruit : dict.descFlower;
-    }
+  // If drinkable good hours dominate, use that type's description
+  const dominant = getDominantDrinkableType(displayTypes, periods);
+  if (dominant) {
+    return dominant === "fruit" ? dict.descFruit : dict.descFlower;
   }
 
   // Transition — describe what it means for the wine
+  const isGood = (t: DayType) => t === "fruit" || t === "flower";
   const firstGood = isGood(displayTypes[0].type);
   const lastGood = isGood(displayTypes[displayTypes.length - 1].type);
 
@@ -229,8 +253,12 @@ export function DayCard({ day, isHero, onSelect, animationDelay = 0 }: DayCardPr
   // --- HERO CARD ---
   if (isHero) {
     const moment = computeBestMoment(periods, locale, dict);
-    const headline = getHeadline(moment.isYes, primaryType, hasTransition, dict);
-    const description = getDescription(moment.isYes, primaryType, hasTransition, displayTypes, periods, dict);
+    const dominantDrinkable = hasTransition ? getDominantDrinkableType(displayTypes, periods) : null;
+    // If drinkable good hours < 6h on a transition day, treat as bad
+    const drinkableHours = hasTransition ? getDrinkableGoodHours(periods) : Infinity;
+    const effectiveYes = moment.isYes && drinkableHours >= 6;
+    const headline = getHeadline(effectiveYes, primaryType, hasTransition, dominantDrinkable, dict);
+    const description = getDescription(effectiveYes, primaryType, hasTransition, displayTypes, periods, dict);
     const heroDate = formatHeroDate(date, locale);
     const dayLabel = formatDayLabel(date, locale, dict);
 
@@ -282,7 +310,7 @@ export function DayCard({ day, isHero, onSelect, animationDelay = 0 }: DayCardPr
             <p className="mt-2 text-2xl font-bold tracking-tight text-foreground">
               {moment.timeText}
             </p>
-            <p className={cn("mt-1.5 text-xs", moment.isYes ? "text-[#7B2D45] font-medium" : "text-muted-foreground/50")}>
+            <p className={cn("mt-1.5 text-xs", effectiveYes ? "text-[#7B2D45] font-medium" : "text-muted-foreground/50")}>
               {dict[moment.contextKey as keyof typeof dict] || moment.contextKey}
             </p>
           </div>
@@ -291,11 +319,11 @@ export function DayCard({ day, isHero, onSelect, animationDelay = 0 }: DayCardPr
           <div
             className={cn(
               "flex w-28 shrink-0 flex-col items-center justify-center rounded-2xl",
-              moment.isYes ? "bg-[#7B2D45]" : "bg-[#c4c0b8]",
+              effectiveYes ? "bg-[#7B2D45]" : "bg-[#c4c0b8]",
             )}
           >
             <span className="text-2xl font-bold text-white">
-              {moment.isYes ? dict.yes : dict.no}
+              {effectiveYes ? dict.yes : dict.no}
             </span>
           </div>
         </div>
